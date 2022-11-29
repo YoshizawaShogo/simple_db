@@ -14,9 +14,9 @@ ys_simple_db = "0.1"
 
 ## 実行例 Example
 
-  $ git clone https://github.com/YoshizawaShogo/simple_db.git
-  $ cd simple_db
-  $ cargo run --example example --release
+    $ git clone https://github.com/YoshizawaShogo/simple_db.git
+    $ cd simple_db
+    $ cargo run --example example --release
 
 ## License
 
