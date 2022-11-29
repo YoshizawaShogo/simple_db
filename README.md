@@ -9,7 +9,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-ys_simple_csv = "0.1"
+ys_simple_db = "0.1"
 ```
 
 ## 実行例 Example
