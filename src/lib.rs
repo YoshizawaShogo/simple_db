@@ -1,5 +1,5 @@
 use std::{collections::HashMap};
-use std::fs;
+use std::{fs, fs::File};
 
 pub struct DB {
     base: HashMap<Vec<String>, Vec<String>>,
@@ -17,6 +17,9 @@ impl DB
         let mut db = Self::new();
         for line in lines {
             let keys_values: Vec<&str> = line.split(delimiter).collect();
+            if keys_values.len() < primary_key_length {
+                break;
+            }
             let keys_values: Vec<String> = keys_values.iter().map(|&str| str.to_string()).collect();
             db.insert(keys_values[0..primary_key_length].to_vec(), keys_values[primary_key_length..].to_vec());
         }
@@ -33,8 +36,14 @@ impl DB
         buf.trim().to_string()
     }
     pub fn from_file(path: &str, primary_key_length: usize, delimiter: &str) -> Self {
+        match File::open(path) {
+            Err(_) => {
+                File::create(path).unwrap();
+            }
+            _ => ()
+        }
         let string = fs::read_to_string(path).expect("Unable to read file");
-        DB::from_str(&string, primary_key_length, delimiter)
+        DB::from_str(&string.trim(), primary_key_length, delimiter)
     }
     pub fn to_file(&self, path: &str, delimiter: &str) -> (){
         let string = self.to_string(delimiter);
