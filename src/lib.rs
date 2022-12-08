@@ -21,7 +21,7 @@ impl DB
                 break;
             }
             let keys_values: Vec<String> = keys_values.iter().map(|&str| str.to_string()).collect();
-            db.insert(keys_values[0..primary_key_length].to_vec(), keys_values[primary_key_length..].to_vec());
+            db.insert(&keys_values[..primary_key_length], &keys_values[primary_key_length..]);
         }
         db
     }
@@ -49,14 +49,14 @@ impl DB
         let string = self.to_string(delimiter);
         fs::write(path, string).expect("Unable to write file");
     }
-    pub fn get<T>(&self, k: &Vec<T>) -> Option<&Vec<String>>
+    pub fn get<T>(&self, k: &[T]) -> Option<&Vec<String>>
     where
         T: ToString,
     {
         let k: Vec<String> = k.iter().map(|x| x.to_string()).collect();
         self.base.get(&k)
     }
-    pub fn insert<T1, T2>(&mut self, k: Vec<T1>, v: Vec<T2>) -> Option<Vec<String>>
+    pub fn insert<T1, T2>(&mut self, k: &[T1], v: &[T2]) -> Option<Vec<String>>
     where
         T1: ToString,
         T2: ToString
@@ -65,11 +65,31 @@ impl DB
         let v = v.iter().map(|x| x.to_string()).collect();
         self.base.insert(k, v)
     }
-    pub fn contains_key<T>(&self, k: &Vec<T>) -> bool
+    pub fn contains_key<T>(&self, k: &[T]) -> bool
     where
         T: ToString,
     {
         let k: Vec<String> = k.iter().map(|x| x.to_string()).collect();
         self.base.contains_key(&k)
     }
+    pub fn len(&self) -> usize {
+        self.base.len()
+    }
+    pub fn iter(&self) -> std::collections::hash_map::Iter<'_, Vec<String>, Vec<String>> {
+        self.base.iter()
+    }
+    pub fn iter_mut(&mut self) -> std::collections::hash_map::IterMut<'_, Vec<String>, Vec<String>> {
+        self.base.iter_mut()
+    }
+    pub fn to_vec(&self) -> Vec<Vec<String>> {
+        let mut vec = Vec::new();
+        for (k, v) in self.iter() {
+            let mut k = k.clone();
+            let mut v = v.clone();
+            k.append(&mut v);
+            vec.push(k);
+        }
+        vec
+    }
+    
 }
